@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: jobintel-backend
+    env: node
+    region: oregon
+    plan: free
+    repo: https://github.com/alkasingh1121/JobIntel.git
+    branch: main
+    buildCommand: npm ci && npm run build -w backend
+    startCommand: npm start --prefix backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+      - key: JWT_SECRET
+      - key: GITHUB_CLIENT_ID
+      - key: GITHUB_CLIENT_SECRET
+      - key: GITHUB_CALLBACK_URL
+        value: "https://<your-backend>.onrender.com/auth/github/callback"
+      - key: CORS_ORIGIN
+        value: "https://jobintell.netlify.app"

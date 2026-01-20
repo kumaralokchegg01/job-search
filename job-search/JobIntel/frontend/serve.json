@@ -1,0 +1,14 @@
+{
+  "public": "/dist",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/**",
+      "destination": "http://localhost:5000/api/**"
+    },
+    {
+      "source": "/**",
+      "destination": "/index.html"
+    }
+  ]
+}

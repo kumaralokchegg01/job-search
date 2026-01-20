@@ -1,0 +1,17 @@
+{
+  "routes": [
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/api/*",
+      "serve": "/api/*",
+      "statusCode": 200
+    }
+  ],
+  "mimeTypes": {
+    ".json": "application/json"
+  }
+}

@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongo:
+    image: mongo:latest
+    container_name: jobintel-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DB: jobintel
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - jobintel-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./JobIntel/backend
+      dockerfile: Dockerfile
+    container_name: jobintel-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./JobIntel/backend/.env.docker
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - jobintel-network
+    volumes:
+      - ./JobIntel/backend/src:/app/src
+    restart: unless-stopped
+
+  # Redis Cache (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: jobintel-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - jobintel-network
+    restart: unless-stopped
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./JobIntel/frontend
+      dockerfile: Dockerfile
+    container_name: jobintel-frontend
+    ports:
+      - "8080:8080"
+    environment:
+      VITE_API_URL: http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - jobintel-network
+    restart: unless-stopped
+
+networks:
+  jobintel-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
